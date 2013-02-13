@@ -9,5 +9,12 @@ public class Constants {
 		CounterClockwise,
 		None,
 	}
+	
+	public enum EntityState {
+		Stopped,
+		Walking,
+		Disabled,
+		Dead,
+	}
 
 }

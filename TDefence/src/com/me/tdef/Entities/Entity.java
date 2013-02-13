@@ -23,6 +23,8 @@ public abstract class Entity {
 	protected EntityAnimation currentAnimation;
 	
 	protected Constants.RotationDirection rotationDirection;
+	protected Constants.EntityState currentState;
+	
 	protected Vector2 facingPoint;
 	protected float rotationMaxSpeed;
 	protected float rotationAcceleration;
@@ -85,6 +87,13 @@ public abstract class Entity {
 	}
 	
 	/**
+	 * Gets the current state of the entity.
+	 */
+	public Constants.EntityState getCurrentState() {
+		return currentState;
+	}
+	
+	/**
 	 * Gets the facing point the entity is either facing currently or rotating towards.
 	 */
 	public Vector2 getFacingPoint(){
@@ -110,6 +119,15 @@ public abstract class Entity {
 	 */
 	public float getTargetRotation(){
 		return targetRotation;
+	}
+	
+	/**
+	 * Returns a rectangle the size of the current frame of the entitys animation. This is primarily used for collision detection.
+	 */
+	public Rectangle getBoundingBox(){
+		return new Rectangle(position.x, position.y, 
+				currentAnimation.currentFrameRegion().getRegionWidth(), 
+				currentAnimation.currentFrameRegion().getRegionHeight());
 	}
 	
 	/**
@@ -142,17 +160,15 @@ public abstract class Entity {
 	/**
 	 * Sets a facing point for the entity.
 	 */
-	public void setFacePoint(Vector2 point){
+	public void setFacingPoint(Vector2 point){
 		this.facingPoint = point;
 	}
 	
 	/**
-	 * Returns a rectangle the size of the current frame of the entitys animation. This is primarily used for collision detection.
+	 * Sets a new target rotation for the entity.
 	 */
-	public Rectangle boundingBox(){
-		return new Rectangle(position.x, position.y, 
-				currentAnimation.currentFrameRegion().getRegionWidth(), 
-				currentAnimation.currentFrameRegion().getRegionHeight());
+	public void setTargetRotation(float newRotation) {
+		this.facingPoint = new Vector2((float)Math.cos(newRotation), (float)Math.sin(newRotation));
 	}
 	
 	/**
@@ -161,7 +177,7 @@ public abstract class Entity {
 	public void draw(SpriteBatch batch){
 		batch.draw(currentAnimation.currentFrameRegion(), position.x, position.y, 
 				currentAnimation.frameOrigin().x, currentAnimation.frameOrigin().y, 
-				boundingBox().width, boundingBox().height, scaleX, scaleY, rotation);
+				getBoundingBox().width, getBoundingBox().height, scaleX, scaleY, rotation);
 	}
 	
 	/**
@@ -179,7 +195,7 @@ public abstract class Entity {
 		
 		float rotationDistance = rotation < newRotation ? newRotation - rotation : rotation - newRotation;
 		
-		if(rotationDistance > rotationAcceleration){
+		if(rotationDistance > rotationAcceleration * 2){
 			
 			if(rotation < newRotation){
 				
