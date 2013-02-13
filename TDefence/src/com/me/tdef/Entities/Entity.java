@@ -126,17 +126,24 @@ public abstract class Entity {
 	}
 	
 	/**
-	 * Sets the velocity of the character..
+	 * Sets the velocity of the entity.
 	 */
 	public void setVelocity(Vector2 newVelocity){
 		this.velocity = newVelocity;
 	}
 	
 	/**
-	 * Sets the rotation velocity of the character.
+	 * Sets the rotation velocity of the entity.
 	 */
 	public void setRotationVelocity(float newVelocity){
 		this.rotationVelocity = newVelocity;
+	}
+	
+	/**
+	 * Sets a facing point for the entity.
+	 */
+	public void setFacePoint(Vector2 point){
+		this.facingPoint = point;
 	}
 	
 	/**
@@ -203,6 +210,5 @@ public abstract class Entity {
 		
 		targetRotation = newRotation;
 	}
-	
 
 }

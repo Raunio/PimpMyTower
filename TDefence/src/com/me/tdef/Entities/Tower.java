@@ -5,5 +5,9 @@ package com.me.tdef.Entities;
  *
  */
 public class Tower extends Entity {
+	
+	public void update(float deltaTime){
+		
+	}
 
 }
