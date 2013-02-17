@@ -5,9 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
-import com.me.tdef.Entities.Tower;
 import com.me.tdef.Levels.GameLevel;
 
 public class MyGdxGame implements ApplicationListener {
@@ -15,7 +12,7 @@ public class MyGdxGame implements ApplicationListener {
 	private SpriteBatch batch;
 	
 	private GameLevel level;
-	
+		
 	@Override
 	public void create() {		
 		float w = Gdx.graphics.getWidth();
@@ -49,7 +46,8 @@ public class MyGdxGame implements ApplicationListener {
 	
 		batch.begin();
 		
-		level.render(batch);		
+		level.render(batch);
+
 		
 		batch.end();
 	}

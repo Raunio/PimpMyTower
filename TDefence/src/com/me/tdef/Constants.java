@@ -1,11 +1,18 @@
 package com.me.tdef;
 
 public class Constants {
+	public static final int TILE_WIDTH = 64;
+	public static final int TILE_HEIGHT = 64;
 	
 	public static final String TowerTextureAsset = "data/tower.png";
 	public static final String OpenPathTextureAsset = "data/openPathTexture.png";
 	public static final String CornerPathTextureAsset = "data/cornerPathTexture.png";
 	public static final String BaseGroundTextureAsset = "data/baseGroundTexture.png";
+	public static final String BulletTextureAsset = "data/bullet.png";
+	public static final String ZombieSpriteSheetAsset = "data/enemy2.png";
+	
+	public static final String buttonUpTexture = "data/buttonUp.png";
+	public static final String buttonDownTexture = "data/buttonDown.png";
 	
 	
 	public static final char OpenPathSymbolX = 'X';
@@ -21,9 +28,8 @@ public class Constants {
 	public static final char CornerPathSymbol_leftTop = 'a';
 	public static final char CornerPathSymbol_leftBot = 'v';
 	
-	public static final String[] map1Data = {"Y LXXXA", "Y Y   Y", "Y Y aX<", "Y Y Y", ">XV >XXX"};
-	
-	//public static final String CornerPathSymbol
+	public static final String[] map1Data = {"Y LXXXA", "Y Y   Y", "Y Y aX<", "Y Y Y", ">XV >XX"};
+
 	
 	public enum RotationDirection{
 		Clockwise,
@@ -33,9 +39,8 @@ public class Constants {
 	
 	public enum EntityState {
 		Stopped,
-		Walking,
+		Moving,
 		Disabled,
-		Dead,
 	}
 	
 	public enum TowerState {
@@ -45,6 +50,15 @@ public class Constants {
 	
 	public enum ProjectileType {
 		Bullet,
+	}
+	
+	public enum ToolType {
+		Select,
+		Build,
+	}
+	
+	public enum EnemyType {
+		Zombie,
 	}
 
 }

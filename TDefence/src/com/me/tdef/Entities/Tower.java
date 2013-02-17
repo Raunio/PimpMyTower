@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.me.tdef.Constants;
+import com.me.tdef.EntityPhysics;
 
 /**
  * @author Niko
@@ -21,7 +22,7 @@ public class Tower extends Entity {
 	private EntityAnimation idleAnimation;
 	private EntityAnimation shootingAnimation;
 	
-	private Constants.TowerState currentState;
+	private Constants.TowerState currentTowerState;
 	
 	private float shootTimer;
 
@@ -42,16 +43,25 @@ public class Tower extends Entity {
 	
 	public Tower(Texture spriteSheet, Vector2 position) {
 		projectileType = Constants.ProjectileType.Bullet;
+		
 		initializeAnimations(spriteSheet);
-		this.position = position;
-		currentState = Constants.TowerState.Idle;
+		
+		this.position = new Vector2(position.x + Constants.TILE_WIDTH - idleAnimation.getFrameWidth(), 
+				position.y + Constants.TILE_HEIGHT - idleAnimation.getFrameHeight());
+		
 		activeProjectiles = new Array<Projectile>();
+		
 		scaleX = 1f;
 		scaleY = 1f;
 		rotation = 0f;
 		this.rotationAcceleration = 0.25f;
 		this.rotationMaxSpeed = 2f;
+		this.attackRange = 100f;
+		this.attackSpeed = 0.3f;
+		
 		rotationDirection = Constants.RotationDirection.None;
+		currentEntityState = Constants.EntityState.Stopped;
+		currentTowerState = Constants.TowerState.Idle;
 	}
 	
 	private void initializeAnimations(Texture spriteSheet) {
@@ -74,8 +84,10 @@ public class Tower extends Entity {
 	 */
 	public void shoot() {
 		if(isAttackReady()) {
-			activeProjectiles.add(new Projectile(projectileType, position, rotation));
-			currentState = Constants.TowerState.Shooting;
+			activeProjectiles.add(new Projectile(projectileType, new Vector2(position.x + getOrigin().x, 
+					position.y + getOrigin().y), rotation));
+			currentTowerState = Constants.TowerState.Shooting;
+			shootTimer = 0;
 		}
 	}
 	
@@ -85,6 +97,7 @@ public class Tower extends Entity {
 	public void updateProjectiles(float deltaTime) {
 		for(Projectile p : activeProjectiles) {
 			p.update(deltaTime);
+			EntityPhysics.instance().applyProjectilePhysics(p);
 		}
 	}
 	
@@ -95,7 +108,7 @@ public class Tower extends Entity {
 	}
 	
 	private void handleAnimations() {
-		switch(currentState) {
+		switch(currentTowerState) {
 		case Idle:
 			currentAnimation = idleAnimation;
 			break;

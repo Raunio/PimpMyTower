@@ -1,6 +1,5 @@
 package com.me.tdef.Entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -16,6 +15,8 @@ public abstract class Entity {
 	protected Vector2 velocity;
 	protected float rotationVelocity;
 	protected float acceleration;
+	protected float tangentialVelocityMax;
+	protected float tangentialVelocity;
 	
 	protected float rotation;
 	protected float scaleX;
@@ -24,7 +25,7 @@ public abstract class Entity {
 	protected EntityAnimation currentAnimation;
 	
 	protected Constants.RotationDirection rotationDirection;
-	protected Constants.EntityState currentState;
+	protected Constants.EntityState currentEntityState;
 	
 	protected Vector2 facingPoint;
 	protected float rotationMaxSpeed;
@@ -42,7 +43,7 @@ public abstract class Entity {
 	 * Gets the veclotiy of the entity.
 	 */
 	public Vector2 getVelocity(){
-		return velocity;
+		return velocity == null ? Vector2.Zero : velocity;
 	}
 	
 	/**
@@ -57,6 +58,20 @@ public abstract class Entity {
 	 */
 	public float getAcceleration(){
 		return acceleration;
+	}
+	
+	/**
+	 * Returns the maximum tangential velocity of the entity.
+	 */
+	public float getTangentialVelocityMax() {
+		return tangentialVelocityMax;
+	}
+	
+	/**
+	 * Returns the current tangential velocity of the entity.
+	 */
+	public float getTangentialVelocity() {
+		return tangentialVelocity;
 	}
 	
 	/**
@@ -81,6 +96,13 @@ public abstract class Entity {
 	}
 	
 	/**
+	 * Returns the origin of the entitys current animation.
+	 */
+	public Vector2 getOrigin() {
+		return currentAnimation.frameOrigin();
+	}
+	
+	/**
 	 * Gets the current rotation direction of the entity.
 	 */
 	public Constants.RotationDirection getRotationDirection(){
@@ -90,8 +112,8 @@ public abstract class Entity {
 	/**
 	 * Gets the current state of the entity.
 	 */
-	public Constants.EntityState getCurrentState() {
-		return currentState;
+	public Constants.EntityState getCurrentEntityState() {
+		return currentEntityState;
 	}
 	
 	/**
@@ -135,22 +157,26 @@ public abstract class Entity {
 	 * Applies all velocites to entity.
 	 */
 	public void applyVelocities(){
-		//position = new Vector2(position.x + velocity.x, position.y + velocity.y);
+		position = new Vector2(position.x + getVelocity().x, position.y + getVelocity().y);
 		rotation += rotationVelocity;
 	}
-	
+
 	/**
 	 * Sets the velocity of the entity.
 	 */
-	public void setVelocity(Vector2 newVelocity){
-		this.velocity = newVelocity;
+	public void setVelocity(Vector2 value){
+		this.velocity = value;
 	}
 	
 	/**
 	 * Sets the rotation velocity of the entity.
 	 */
-	public void setRotationVelocity(float newVelocity){
-		this.rotationVelocity = newVelocity;
+	public void setRotationVelocity(float value){
+		this.rotationVelocity = value;
+	}
+	
+	public void setTangentialVelocity(float value) {
+		this.tangentialVelocity = value;
 	}
 	
 	/**
@@ -163,8 +189,8 @@ public abstract class Entity {
 	/**
 	 * Sets a new target rotation for the entity.
 	 */
-	public void setTargetRotation(float newRotation) {
-		this.facingPoint = new Vector2((float)Math.cos(newRotation), (float)Math.sin(newRotation));
+	public void setTargetRotation(float value) {
+		targetRotation = value;
 	}
 	
 	/**
@@ -182,6 +208,13 @@ public abstract class Entity {
 	}
 	
 	/**
+	 * Sets the entity to the state.
+	 */
+	public void setEntityState(Constants.EntityState value) {
+		this.currentEntityState = value;
+	}
+	
+	/**
 	 * Main draw method for the entity.
 	 */
 	public void draw(SpriteBatch batch){
@@ -194,20 +227,19 @@ public abstract class Entity {
 	 * Calculates a new rotation value for the entity according to its facing point and sets its rotation direction accordingly.
 	 */
 	public void updateRotation(){
-		float newRotation = rotation;
 		
 		if(facingPoint != null){
 			Vector2 distance2D = new Vector2(facingPoint.x - position.x - currentAnimation.frameOrigin().x,
 					facingPoint.y - position.y - currentAnimation.frameOrigin().y);
 			
-			newRotation = (float)Math.toDegrees(Math.atan2(distance2D.y, distance2D.x));
+			targetRotation = (float)Math.toDegrees(Math.atan2(distance2D.y, distance2D.x));
 		}
 		
-		if(newRotation < 0) {
-			newRotation += 360f;
+		if(targetRotation < 0) {
+			targetRotation += 360f;
 		}
-		else if(newRotation > 360f) {
-			newRotation -= 360f;
+		else if(targetRotation > 360f) {
+			targetRotation -= 360f;
 		}
 		
 		if(rotation < 0) {
@@ -217,10 +249,10 @@ public abstract class Entity {
 			rotation -= 360f;
 		}
 		
-		float distance = rotation - newRotation < 0 ? newRotation - rotation : rotation - newRotation;
+		float distance = rotation - targetRotation < 0 ? targetRotation - rotation : rotation - targetRotation;
 		
 		if(distance > this.rotationMaxSpeed / this.rotationAcceleration) {
-			if(rotation < newRotation) {
+			if(rotation < targetRotation) {
 				if(distance > 180f) {
 					rotationDirection = Constants.RotationDirection.CounterClockwise;
 				}
@@ -241,8 +273,6 @@ public abstract class Entity {
 		else {
 			rotationDirection = Constants.RotationDirection.None;
 		}
-		
-		targetRotation = newRotation;
 	}
 
 }

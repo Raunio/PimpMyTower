@@ -2,11 +2,10 @@ package com.me.tdef.Levels;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.me.tdef.Constants;
+import com.me.tdef.Entities.Enemy;
 import com.me.tdef.Entities.EnemyGuidePoint;
 
 /**
@@ -24,17 +23,7 @@ public class GameMap {
 	private Texture openPathTexture;
 	private Texture cornerPathTexture;
 	
-	private Sprite openPathY;
-	private Sprite openPathX;
-	private Sprite cornerPathYR;
-	private Sprite cornerPathYL;
-	private Sprite cornerPathYRFlipped;
-	private Sprite cornerPathYLFlipped;
-	private Sprite cornerPathXU;
-	private Sprite cornerPathXD;
-	private Sprite cornerPathXUFlipped;
-	private Sprite cornerPathXDFlipped;
-	private Array<Sprite> mainPath;
+	private Tile[][] tiles;
 	
 	/**
 	 * Gets the width of the map.
@@ -53,6 +42,13 @@ public class GameMap {
 	 */
 	public EnemyGuidePoint[] getGuidePoints() {
 		return guidePoints;
+	}
+	
+	/**
+	 * Returns a 2-dimentional array of tiles specified for the map.
+	 */
+	public Tile[][] getTileArray() {
+		return tiles;
 	}
 	
 	/**
@@ -83,12 +79,13 @@ public class GameMap {
 		this.guidePoints = guidePoints;
 	}
 	
+	/**
+	 * @param width Game level width
+	 * @param height Game level height
+	 */
 	public GameMap(float width, float height) {
 		mapWidth = width;
-		mapHeight = height;
-		
-		mainPath = new Array<Sprite>();
-		
+		mapHeight = height;		
 	}
 	
 	/**
@@ -108,6 +105,17 @@ public class GameMap {
 		cornerPathTexture.dispose();
 	}
 	
+	public void GuideEnemy(Enemy subject) {
+		for(int i = 0; i < (int)(mapWidth / Constants.TILE_WIDTH); i++) {
+			for(int j = 0; j < (int)(mapHeight / Constants.TILE_HEIGHT); j++) {
+				if(tiles[i][j] != null && tiles[i][j].containsPoint(new Vector2(subject.getPosition().x + subject.getOrigin().x, 
+						subject.getPosition().y + subject.getOrigin().y)) && tiles[i][j].getGuidePoint() != null) {
+					subject.setTargetRotation(tiles[i][j].getGuidePoint().getGuideRotation());
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Main draw method. Call in the render() of the game to draw map.
 	 */
@@ -122,88 +130,26 @@ public class GameMap {
 			}
 		}
 		
-		for(Sprite s : mainPath) {
-			s.draw(batch);
+		for(int i = 0; i < (int)(mapWidth / Constants.TILE_WIDTH); i++) {
+			for(int j = 0; j < (int)(mapHeight / Constants.TILE_HEIGHT); j++) {
+				if(tiles[i][j] != null)
+					tiles[i][j].draw(batch);
+			}
 		}
 	}
 	
+	/**
+	 * Creates a tilemap from given string data. Symbols are defined in Constants.java
+	 */
 	public void createMap(String[] data) {
 		int rowCounter = 0;
 		
-		int cWidth = cornerPathTexture.getWidth();
-		int cHeight = cornerPathTexture.getHeight();
-		int oWidth = openPathTexture.getWidth();
-		int oHeight = openPathTexture.getHeight();
+		tiles = new Tile[(int) (mapWidth / Constants.TILE_WIDTH)][(int) (mapHeight / Constants.TILE_HEIGHT)];
 		
 		for(String s : data) {
-			for(int i = 0; i < s.length(); i++) {
-				Sprite sprite = new Sprite();
-				switch(s.charAt(i)) {
-				case Constants.CornerPathSymbol_botLeft:
-					sprite = new Sprite(cornerPathTexture);
-					sprite.rotate(180);
-					sprite.setPosition(i * cWidth, rowCounter * cHeight);
-					mainPath.add(sprite);
-					break;
-				case Constants.CornerPathSymbol_botRight:
-					sprite = new Sprite(cornerPathTexture);
-					sprite.rotate(180);
-					sprite.flip(true, false);
-					sprite.setPosition(i * cWidth, rowCounter * cHeight);
-					mainPath.add(sprite);
-					break;
-				case Constants.CornerPathSymbol_leftBot:
-					sprite = new Sprite(cornerPathTexture);
-					sprite.rotate(270);
-					sprite.flip(false, true);
-					sprite.setPosition(i * cWidth, rowCounter * cHeight);
-					mainPath.add(sprite);
-					break;
-				case Constants.CornerPathSymbol_leftTop:
-					sprite = new Sprite(cornerPathTexture);
-					sprite.rotate(0);
-					sprite.flip(false, true);
-					sprite.setPosition(i * cWidth, rowCounter * cHeight);
-					mainPath.add(sprite);
-					break;
-				case Constants.CornerPathSymbol_rightBot:
-					sprite = new Sprite(cornerPathTexture);
-					sprite.rotate(-90);
-					sprite.setPosition(i * cWidth, rowCounter * cHeight);
-					mainPath.add(sprite);
-					break;
-				case Constants.CornerPathSymbol_rightTop:
-					sprite = new Sprite(cornerPathTexture);
-					sprite.rotate(90);
-					sprite.flip(false, true);
-					sprite.setPosition(i * cWidth, rowCounter * cHeight);
-					mainPath.add(sprite);
-					break;
-				case Constants.CornerPathSymbol_topLeft:
-					sprite = new Sprite(cornerPathTexture);
-					sprite.flip(true, false);
-					sprite.setPosition(i * cWidth, rowCounter * cHeight);
-					mainPath.add(sprite);
-					break;
-				case Constants.CornerPathSymbol_topRight:
-					sprite = new Sprite(cornerPathTexture);
-					sprite.setPosition(i * cWidth, rowCounter * cHeight);
-					mainPath.add(sprite);
-					break;
-				case Constants.OpenPathSymbolX:
-					sprite = new Sprite(openPathTexture);
-					sprite.rotate(90);
-					sprite.setPosition(i * oWidth, rowCounter * oHeight);
-					mainPath.add(sprite);
-					break;
-				case Constants.OpenPathSymbolY:
-					sprite = new Sprite(openPathTexture);
-					sprite.setPosition(i * oWidth, rowCounter * oHeight);
-					mainPath.add(sprite);
-					break;
-				}
-				
-				
+			for(int i = 0; i < s.length(); i++) {	
+				tiles[i][rowCounter] = new Tile(new Vector2(i * Constants.TILE_WIDTH, rowCounter * Constants.TILE_HEIGHT));
+				tiles[i][rowCounter].createSprite(s.charAt(i));
 			}
 			
 			rowCounter++;

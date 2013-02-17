@@ -19,11 +19,28 @@ public class EntityAnimation {
 	
 	private boolean looping;
 	
+	private int frameWidth;
+	private int frameHeight;
+	
 	/**
 	 * Returns the current frame of the animation.
 	 */
 	public TextureRegion currentFrameRegion() {
 		return currentFrame;
+	}
+	
+	/**
+	 * Returns frame width of the animation.
+	 */
+	public int getFrameWidth() {
+		return frameWidth;
+	}
+	
+	/**
+	 * Returns the frame height of the animation.
+	 */
+	public int getFrameHeight() {
+		return frameHeight;
 	}
 	
 	/**
@@ -49,6 +66,9 @@ public class EntityAnimation {
 		animTimer = 0f;
 		
 		this.looping = looping;
+		
+		this.frameWidth = frameWidth;
+		this.frameHeight = frameHeight;
 	}
 	
 	/** Main update method. Required to call in the main game loop.
