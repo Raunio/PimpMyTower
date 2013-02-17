@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.me.tdef.Constants;
 import com.me.tdef.Entities.Enemy;
-import com.me.tdef.Entities.EnemyGuidePoint;
 
 /**
  * A drawable ingame map. Also contains all enemy guidepoints;
@@ -16,8 +15,6 @@ public class GameMap {
 	
 	private float mapWidth;
 	private float mapHeight;
-	
-	private EnemyGuidePoint[] guidePoints;
 	
 	private Texture baseGroundTexture;
 	private Texture openPathTexture;
@@ -37,18 +34,26 @@ public class GameMap {
 	public float getMapHeight() {
 		return mapHeight;
 	}
-	/**
-	 * Gets all of the maps guidepoints in an array.
-	 */
-	public EnemyGuidePoint[] getGuidePoints() {
-		return guidePoints;
-	}
 	
 	/**
 	 * Returns a 2-dimentional array of tiles specified for the map.
 	 */
 	public Tile[][] getTileArray() {
 		return tiles;
+	}
+	
+	/**
+	 * Returns the amount of rows the tile array of the map has.
+	 */
+	public int getTileRowCount() {
+		return (int)(mapWidth / Constants.TILE_WIDTH);
+	}
+	
+	/**
+	 * Returns the amount of columns the tile array of the map has.
+	 */
+	public int getTileColumnCount() {
+		return (int)(mapHeight / Constants.TILE_HEIGHT);
 	}
 	
 	/**
@@ -70,13 +75,6 @@ public class GameMap {
 	 */
 	public void setCornerPathTexture(Texture texture) {
 		cornerPathTexture = texture;
-	}
-	
-	/**
-	 * Sets the guide points of the map.
-	 */
-	public void setGuidePoints(EnemyGuidePoint[] guidePoints) {
-		this.guidePoints = guidePoints;
 	}
 	
 	/**

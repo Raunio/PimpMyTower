@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.me.tdef.CombatHandler;
 import com.me.tdef.EntityPhysics;
 import com.me.tdef.Constants;
 import com.me.tdef.Entities.Enemy;
@@ -25,6 +26,10 @@ public class GameLevel {
 	
 	private GameMap map;
 	
+	private Constants.ToolType currentTool;
+	
+	Texture towerSheet;
+	
 	/**
 	 * Initializes the level.
 	 */
@@ -37,11 +42,14 @@ public class GameLevel {
 		map = new GameMap(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		map.loadContent();
 		map.createMap(Constants.map1Data);
+	
+		Projectile.loadSpriteSheet(new Texture(Gdx.files.internal(Constants.BulletTextureAsset)));
+		towerSheet = new Texture(Gdx.files.internal(Constants.TowerTextureAsset));
+		
+		currentTool = Constants.ToolType.Build;
 		
 		buildTower(1, 3);
 		spawnEnemy(Constants.EnemyType.Zombie, 0, 0, 90);
-		
-		Projectile.loadSpriteSheet(new Texture(Gdx.files.internal(Constants.BulletTextureAsset)));
 	}
 	
 	/**
@@ -59,7 +67,11 @@ public class GameLevel {
 			towerBehaviour.apply(t, enemies);
 			t.updateProjectiles(deltaTime);
 			EntityPhysics.instance().apply(t);
+			t.cleanProjectiles(map.getMapWidth(), map.getMapHeight());
 		}
+		
+		CombatHandler.instance().update(towers, enemies);
+		
 	}
 	
 	/**
@@ -78,16 +90,29 @@ public class GameLevel {
 	}
 	
 	public void handleInput(int x, int y) {
-
+		for(int i = 0; i < map.getTileRowCount(); i++)
+			for(int j = 0; j < map.getTileColumnCount(); j++)
+			{
+				switch(currentTool) {
+				case Select:
+					break;
+				case Build:
+					if(map.getTileArray()[i][j] != null && map.getTileArray()[i][j].containsPoint(new Vector2(x, map.getMapHeight() - y))) {
+						buildTower(i, j);
+					}
+					break;
+				}
+			}	
 	}
 	
 	public void dispose() {
 		map.dispose();
+		towerSheet.dispose();
 	}
 	
 	private void buildTower(int x, int y) {
 		if(!map.getTileArray()[x][y].isOccupied()) {
-			towers.add(new Tower(new Texture(Gdx.files.internal(Constants.TowerTextureAsset)), map.getTileArray()[x][y].getPosition()));
+			towers.add(new Tower(towerSheet, map.getTileArray()[x][y].getPosition()));
 			map.getTileArray()[x][y].setOccupied(true);
 		}
 	}

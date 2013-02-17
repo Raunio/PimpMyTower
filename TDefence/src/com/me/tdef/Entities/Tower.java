@@ -56,12 +56,14 @@ public class Tower extends Entity {
 		rotation = 0f;
 		this.rotationAcceleration = 0.25f;
 		this.rotationMaxSpeed = 2f;
-		this.attackRange = 100f;
+		this.attackRange = 120f;
 		this.attackSpeed = 0.3f;
 		
 		rotationDirection = Constants.RotationDirection.None;
 		currentEntityState = Constants.EntityState.Stopped;
 		currentTowerState = Constants.TowerState.Idle;
+		
+		update(0f);
 	}
 	
 	private void initializeAnimations(Texture spriteSheet) {
@@ -101,9 +103,29 @@ public class Tower extends Entity {
 		}
 	}
 	
+	/**
+	 * Draw all active projectiels shot by the turret.
+	 */
 	public void drawProjectiles(SpriteBatch batch) {
 		for(Projectile p : activeProjectiles) {
 			p.draw(batch);
+		}
+	}
+	
+	/**
+	 * Checks if any projectiles have left the game area and cleans them off.
+	 */
+	public void cleanProjectiles(float levelWidth, float levelHeight) {
+		for(int i = 0; i < activeProjectiles.size; i++) {
+			if(activeProjectiles.get(i).position.x < 0)
+				activeProjectiles.removeIndex(i);
+			else if(activeProjectiles.get(i).position.y < 0) 
+				activeProjectiles.removeIndex(i);
+			else if(activeProjectiles.get(i).position.x > levelWidth)
+				activeProjectiles.removeIndex(i);
+			else if(activeProjectiles.get(i).position.y > levelHeight) {
+				activeProjectiles.removeIndex(i);
+			}
 		}
 	}
 	
