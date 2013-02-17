@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.me.tdef.Constants;
 import com.me.tdef.Entities.EnemyGuidePoint;
 
@@ -26,9 +28,13 @@ public class GameMap {
 	private Sprite openPathX;
 	private Sprite cornerPathYR;
 	private Sprite cornerPathYL;
+	private Sprite cornerPathYRFlipped;
+	private Sprite cornerPathYLFlipped;
 	private Sprite cornerPathXU;
 	private Sprite cornerPathXD;
-	private Sprite[] mainPath;
+	private Sprite cornerPathXUFlipped;
+	private Sprite cornerPathXDFlipped;
+	private Array<Sprite> mainPath;
 	
 	/**
 	 * Gets the width of the map.
@@ -80,14 +86,23 @@ public class GameMap {
 	public GameMap(float width, float height) {
 		mapWidth = width;
 		mapHeight = height;
+		
+		mainPath = new Array<Sprite>();
+		
 	}
 	
+	/**
+	 * Loads all textures.
+	 */
 	public void loadContent() {
 		openPathTexture = new Texture(Gdx.files.internal(Constants.OpenPathTextureAsset));
 		cornerPathTexture = new Texture(Gdx.files.internal(Constants.CornerPathTextureAsset));
 		baseGroundTexture = new Texture(Gdx.files.internal(Constants.BaseGroundTextureAsset));
 	}
 	
+	/**
+	 * Dispose all textures.
+	 */
 	public void dispose() {
 		openPathTexture.dispose();
 		cornerPathTexture.dispose();
@@ -107,9 +122,92 @@ public class GameMap {
 			}
 		}
 		
-		/*for(Sprite s : mainPath) {
+		for(Sprite s : mainPath) {
 			s.draw(batch);
-		}*/
+		}
+	}
+	
+	public void createMap(String[] data) {
+		int rowCounter = 0;
+		
+		int cWidth = cornerPathTexture.getWidth();
+		int cHeight = cornerPathTexture.getHeight();
+		int oWidth = openPathTexture.getWidth();
+		int oHeight = openPathTexture.getHeight();
+		
+		for(String s : data) {
+			for(int i = 0; i < s.length(); i++) {
+				Sprite sprite = new Sprite();
+				switch(s.charAt(i)) {
+				case Constants.CornerPathSymbol_botLeft:
+					sprite = new Sprite(cornerPathTexture);
+					sprite.rotate(180);
+					sprite.setPosition(i * cWidth, rowCounter * cHeight);
+					mainPath.add(sprite);
+					break;
+				case Constants.CornerPathSymbol_botRight:
+					sprite = new Sprite(cornerPathTexture);
+					sprite.rotate(180);
+					sprite.flip(true, false);
+					sprite.setPosition(i * cWidth, rowCounter * cHeight);
+					mainPath.add(sprite);
+					break;
+				case Constants.CornerPathSymbol_leftBot:
+					sprite = new Sprite(cornerPathTexture);
+					sprite.rotate(270);
+					sprite.flip(false, true);
+					sprite.setPosition(i * cWidth, rowCounter * cHeight);
+					mainPath.add(sprite);
+					break;
+				case Constants.CornerPathSymbol_leftTop:
+					sprite = new Sprite(cornerPathTexture);
+					sprite.rotate(0);
+					sprite.flip(false, true);
+					sprite.setPosition(i * cWidth, rowCounter * cHeight);
+					mainPath.add(sprite);
+					break;
+				case Constants.CornerPathSymbol_rightBot:
+					sprite = new Sprite(cornerPathTexture);
+					sprite.rotate(-90);
+					sprite.setPosition(i * cWidth, rowCounter * cHeight);
+					mainPath.add(sprite);
+					break;
+				case Constants.CornerPathSymbol_rightTop:
+					sprite = new Sprite(cornerPathTexture);
+					sprite.rotate(90);
+					sprite.flip(false, true);
+					sprite.setPosition(i * cWidth, rowCounter * cHeight);
+					mainPath.add(sprite);
+					break;
+				case Constants.CornerPathSymbol_topLeft:
+					sprite = new Sprite(cornerPathTexture);
+					sprite.flip(true, false);
+					sprite.setPosition(i * cWidth, rowCounter * cHeight);
+					mainPath.add(sprite);
+					break;
+				case Constants.CornerPathSymbol_topRight:
+					sprite = new Sprite(cornerPathTexture);
+					sprite.setPosition(i * cWidth, rowCounter * cHeight);
+					mainPath.add(sprite);
+					break;
+				case Constants.OpenPathSymbolX:
+					sprite = new Sprite(openPathTexture);
+					sprite.rotate(90);
+					sprite.setPosition(i * oWidth, rowCounter * oHeight);
+					mainPath.add(sprite);
+					break;
+				case Constants.OpenPathSymbolY:
+					sprite = new Sprite(openPathTexture);
+					sprite.setPosition(i * oWidth, rowCounter * oHeight);
+					mainPath.add(sprite);
+					break;
+				}
+				
+				
+			}
+			
+			rowCounter++;
+		}
 	}
 
 }

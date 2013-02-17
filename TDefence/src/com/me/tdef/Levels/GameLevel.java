@@ -38,6 +38,7 @@ public class GameLevel {
 		
 		map = new GameMap(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		map.loadContent();
+		map.createMap(Constants.map1Data);
 	}
 	
 	/**
