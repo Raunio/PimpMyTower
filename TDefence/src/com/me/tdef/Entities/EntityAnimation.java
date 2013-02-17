@@ -11,14 +11,13 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class EntityAnimation {
 	
-	private int frame_cols;
-	private int frame_rows;
-	
 	private float animTimer;
 	
 	private Animation animation;
 	private TextureRegion[] frames;
 	private TextureRegion currentFrame;
+	
+	private boolean looping;
 	
 	/**
 	 * Returns the current frame of the animation.
@@ -38,23 +37,18 @@ public class EntityAnimation {
 	 * @param spriteSheet The image file.
 	 * @param animationSpeed The interval for changing frames in seconds.
 	 */
-	public EntityAnimation(Texture spriteSheet, float animationSpeed){
-		TextureRegion[][] tmp = TextureRegion.split(spriteSheet, 
-				spriteSheet.getWidth() / frame_cols, 
-				spriteSheet.getHeight() / frame_rows);
+	public EntityAnimation(Texture spriteSheet, float animationSpeed, boolean looping, int frameWidth, int frameHeight, int startFrame, int endFrame, int sheetRow){
+		int totalFrames = endFrame - startFrame;
+		frames = new TextureRegion[totalFrames];
 		
-		frames = new TextureRegion[frame_cols * frame_rows];
-		
-		int index = 0;
-		
-		for(int i = 0; i < frame_rows; i++)
-			for(int j = 0; j < frame_cols; j++)
-			{
-				frames[index++] = tmp[i][j];
-			}
+		for(int i = 0; i < totalFrames; i++) {
+			frames[i] = new TextureRegion(spriteSheet, i * frameWidth, sheetRow * frameHeight, frameWidth, frameHeight);
+		}
 		
 		animation = new Animation(animationSpeed, frames);
 		animTimer = 0f;
+		
+		this.looping = looping;
 	}
 	
 	/** Main update method. Required to call in the main game loop.
@@ -62,7 +56,7 @@ public class EntityAnimation {
 	 */
 	public void update(float deltaTime){
 		animTimer += deltaTime;
-		currentFrame = animation.getKeyFrame(animTimer, true);
+		currentFrame = animation.getKeyFrame(animTimer, looping);
 	}
 
 }

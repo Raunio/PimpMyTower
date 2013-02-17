@@ -1,5 +1,6 @@
 package com.me.tdef.Entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -134,13 +135,8 @@ public abstract class Entity {
 	 * Applies all velocites to entity.
 	 */
 	public void applyVelocities(){
-		position = new Vector2(position.x + velocity.x, position.y + velocity.y);
+		//position = new Vector2(position.x + velocity.x, position.y + velocity.y);
 		rotation += rotationVelocity;
-		
-		if(rotation > 360)
-			rotation = 0;
-		else if(rotation < 0)
-			rotation = 360;
 	}
 	
 	/**
@@ -172,6 +168,20 @@ public abstract class Entity {
 	}
 	
 	/**
+	 * Sets a rotation value for the entity in degrees.
+	 */
+	public void setRotation(float rotation) {
+		this.rotation = rotation;
+	}
+	
+	/**
+	 * Sets the position of the entity.
+	 */
+	public void setPosition(Vector2 position) {
+		this.position = position;
+	}
+	
+	/**
 	 * Main draw method for the entity.
 	 */
 	public void draw(SpriteBatch batch){
@@ -190,37 +200,45 @@ public abstract class Entity {
 			Vector2 distance2D = new Vector2(facingPoint.x - position.x - currentAnimation.frameOrigin().x,
 					facingPoint.y - position.y - currentAnimation.frameOrigin().y);
 			
-			newRotation = (float) Math.atan2(distance2D.y, distance2D.x) * 57.2957795f;
+			newRotation = (float)Math.toDegrees(Math.atan2(distance2D.y, distance2D.x));
 		}
 		
-		float rotationDistance = rotation < newRotation ? newRotation - rotation : rotation - newRotation;
+		if(newRotation < 0) {
+			newRotation += 360f;
+		}
+		else if(newRotation > 360f) {
+			newRotation -= 360f;
+		}
 		
-		if(rotationDistance > rotationAcceleration * 2){
-			
-			if(rotation < newRotation){
-				
-				if(rotationDistance > 180f){
+		if(rotation < 0) {
+			rotation += 360f;
+		}
+		else if(rotation > 360) {
+			rotation -= 360f;
+		}
+		
+		float distance = rotation - newRotation < 0 ? newRotation - rotation : rotation - newRotation;
+		
+		if(distance > this.rotationMaxSpeed / this.rotationAcceleration) {
+			if(rotation < newRotation) {
+				if(distance > 180f) {
 					rotationDirection = Constants.RotationDirection.CounterClockwise;
 				}
-				else{
+				else {
 					rotationDirection = Constants.RotationDirection.Clockwise;
 				}
 			}
 			
-			else{
-				
-				if(rotationDistance > 180f){
-					
+			else {
+				if(distance > 180f) {
 					rotationDirection = Constants.RotationDirection.Clockwise;
 				}
-				
-				else{
+				else {
 					rotationDirection = Constants.RotationDirection.CounterClockwise;
 				}
 			}
 		}
-		
-		else{
+		else {
 			rotationDirection = Constants.RotationDirection.None;
 		}
 		

@@ -1,8 +1,10 @@
 package com.me.tdef.Levels;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.me.tdef.Constants;
 import com.me.tdef.Entities.EnemyGuidePoint;
 
 /**
@@ -80,8 +82,15 @@ public class GameMap {
 		mapHeight = height;
 	}
 	
-	public void initialize() {
-		
+	public void loadContent() {
+		openPathTexture = new Texture(Gdx.files.internal(Constants.OpenPathTextureAsset));
+		cornerPathTexture = new Texture(Gdx.files.internal(Constants.CornerPathTextureAsset));
+		baseGroundTexture = new Texture(Gdx.files.internal(Constants.BaseGroundTextureAsset));
+	}
+	
+	public void dispose() {
+		openPathTexture.dispose();
+		cornerPathTexture.dispose();
 	}
 	
 	/**
@@ -98,9 +107,9 @@ public class GameMap {
 			}
 		}
 		
-		for(Sprite s : mainPath) {
+		/*for(Sprite s : mainPath) {
 			s.draw(batch);
-		}
+		}*/
 	}
 
 }

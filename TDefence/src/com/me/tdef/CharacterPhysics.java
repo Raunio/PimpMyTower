@@ -21,6 +21,8 @@ public class CharacterPhysics {
 	
 	public void apply(Entity subject){
 		rotate(subject);
+		
+		subject.applyVelocities();
 	}
 	
     private void rotate(Entity subject) {
