@@ -1,5 +1,7 @@
 package com.me.tdef;
 
+
+
 public class Constants {
 	public static final int TILE_WIDTH = 64;
 	public static final int TILE_HEIGHT = 64;
@@ -58,7 +60,16 @@ public class Constants {
 	}
 	
 	public enum EnemyType {
-		Zombie,
+		Zombie;
+		
+		private static EnemyType[] values = null;
+	    public static EnemyType fromInt(int i) {
+	        if(EnemyType.values == null) {
+	        	EnemyType.values = EnemyType.values();
+	        }
+	        return EnemyType.values[i];
+	    }
+	    public static final int size = EnemyType.values().length;
 	}
 
 }

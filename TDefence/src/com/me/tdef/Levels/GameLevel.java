@@ -1,5 +1,6 @@
 package com.me.tdef.Levels;
 
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,6 +11,7 @@ import com.me.tdef.EntityPhysics;
 import com.me.tdef.Constants;
 import com.me.tdef.GraphicalUI;
 import com.me.tdef.Entities.Enemy;
+import com.me.tdef.Entities.EnemySpawner;
 import com.me.tdef.Entities.Projectile;
 import com.me.tdef.Entities.Tower;
 import com.me.tdef.Entities.TowerBehaviour;
@@ -19,7 +21,7 @@ import com.me.tdef.Entities.TowerBehaviour;
  *
  */
 public class GameLevel {
-	
+	private EnemySpawner enemySpawner;
 	private Array<Enemy> enemies;
 	public Array<Tower> towers;
 	
@@ -31,16 +33,13 @@ public class GameLevel {
 	
 	private Texture towerSheet;
 	
-	private float spawnTimer;
-	private float spawnInterval = 2f;
-	
 	private GraphicalUI ui;
 	
 	/**
 	 * Initializes the level.
 	 */
 	public void create(){
-		enemies = new Array<Enemy>();
+		
 		towers = new Array<Tower>();
 		
 		towerBehaviour = new TowerBehaviour();
@@ -48,6 +47,9 @@ public class GameLevel {
 		map = new GameMap(Gdx.graphics.getWidth() + 200, Gdx.graphics.getHeight());
 		map.loadContent();
 		map.createMap(Constants.map1Data);
+		
+		enemySpawner = new EnemySpawner(map.getTileArray()[0][0].getPosition(), 90);	
+		enemies = enemySpawner.spawnedEnemies;
 	
 		Projectile.loadSpriteSheet(new Texture(Gdx.files.internal(Constants.BulletTextureAsset)));
 		towerSheet = new Texture(Gdx.files.internal(Constants.TowerTextureAsset));
@@ -61,6 +63,9 @@ public class GameLevel {
 	 * Main update method. Holds all game logic.
 	 */
 	public void update(float deltaTime){
+		
+		enemySpawner.Update(deltaTime);
+		
 		for(Enemy e : enemies){
 			e.update(deltaTime);
 			EntityPhysics.instance().apply(e);
@@ -77,12 +82,7 @@ public class GameLevel {
 		
 		CombatHandler.instance().update(towers, enemies);
 		
-		spawnTimer += deltaTime;
 		
-		if(spawnTimer >= spawnInterval) {
-			spawnEnemy(Constants.EnemyType.Zombie, 0, 0, 90);
-			spawnTimer = 0;
-		}
 		
 	}
 	
@@ -139,16 +139,6 @@ public class GameLevel {
 			map.getTileArray()[x][y].setOccupied(true);
 		}
 	}
-	
-	private void spawnEnemy(Constants.EnemyType enemyType, int x, int y, float rotation) {
-		Enemy e = new Enemy(enemyType);
-		Vector2 pos = map.getTileArray()[x][y].getPosition();
-		
-		e.setPosition(new Vector2(pos.x + e.getOrigin().x, pos.y + e.getOrigin().y));
-		e.setRotation(rotation);
-		e.setTargetRotation(rotation);
-		
-		enemies.add(e);
-	}
+
 
 }
