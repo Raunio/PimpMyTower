@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Array;
 import com.me.tdef.CombatHandler;
 import com.me.tdef.EntityPhysics;
 import com.me.tdef.Constants;
+import com.me.tdef.GraphicalUI;
 import com.me.tdef.Entities.Enemy;
 import com.me.tdef.Entities.Projectile;
 import com.me.tdef.Entities.Tower;
@@ -33,6 +34,8 @@ public class GameLevel {
 	private float spawnTimer;
 	private float spawnInterval = 2f;
 	
+	private GraphicalUI ui;
+	
 	/**
 	 * Initializes the level.
 	 */
@@ -50,9 +53,8 @@ public class GameLevel {
 		towerSheet = new Texture(Gdx.files.internal(Constants.TowerTextureAsset));
 		
 		currentTool = Constants.ToolType.Build;
-		
-		buildTower(1, 3);
-		
+		ui = new GraphicalUI();
+		ui.create();
 	}
 	
 	/**
@@ -89,6 +91,7 @@ public class GameLevel {
 	 */
 	public void render(SpriteBatch batch){
 		map.draw(batch);
+		
 		for(Enemy e : enemies){
 			e.draw(batch);
 		}
@@ -96,7 +99,14 @@ public class GameLevel {
 		for(Tower t : towers){
 			t.drawProjectiles(batch);
 			t.draw(batch);	
-		}			
+		}
+	}
+	
+	/**
+	 * Renders the graphical user interface.
+	 */
+	public void renderUI() {
+		ui.render();
 	}
 	
 	public void handleInput(int x, int y) {
@@ -118,6 +128,7 @@ public class GameLevel {
 	public void dispose() {
 		map.dispose();
 		towerSheet.dispose();
+		ui.dispose();
 	}
 	
 	private void buildTower(int x, int y) {

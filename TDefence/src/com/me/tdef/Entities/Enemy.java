@@ -8,6 +8,8 @@ public class Enemy extends Entity{
 	
 	private float currentHealth;
 	private float maxHealth;
+	private int bounty;
+	
 	
 	private Constants.EnemyType enemyType;
 	
@@ -64,6 +66,7 @@ public class Enemy extends Entity{
 			this.tangentialVelocityMax = 1f;
 			this.rotationAcceleration = 0.5f;
 			this.rotationMaxSpeed = 3f;
+			this.bounty = 2;
 			break;
 		}
 	}

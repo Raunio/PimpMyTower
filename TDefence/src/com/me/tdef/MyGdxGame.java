@@ -43,13 +43,14 @@ public class MyGdxGame implements ApplicationListener {
 		level.update(Gdx.graphics.getDeltaTime());
 		level.handleInput(Gdx.input.getX(), Gdx.input.getY());
 		batch.setProjectionMatrix(camera.combined);
-	
+		
 		batch.begin();
 		
 		level.render(batch);
 
-		
 		batch.end();
+		
+		level.renderUI();
 	}
 
 	@Override

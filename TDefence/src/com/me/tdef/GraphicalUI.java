@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -13,28 +15,35 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 public class GraphicalUI {
 	
 	private Stage stage;
-
+	private TextureRegion buttonUpTexture;
+	private TextureRegion buttonDownTexture;
+	
 	public void create() {
 		stage = new Stage();
 		Table table = new Table();
 		table.setFillParent(true);
 		stage.addActor(table);
 		
-		TextureRegion upRegion = new TextureRegion(new Texture(Gdx.files.internal(Constants.buttonUpTexture)));
-		TextureRegion downRegion = new TextureRegion(new Texture(Gdx.files.internal(Constants.buttonDownTexture)));
-		BitmapFont buttonFont = new BitmapFont();
+		buttonUpTexture = new TextureRegion(new Texture(Gdx.files.internal(Constants.buttonUpTexture)));
+		buttonDownTexture = new TextureRegion(new Texture(Gdx.files.internal(Constants.buttonDownTexture)));
 		
-		TextButtonStyle style = new TextButtonStyle();
+		LabelStyle labelStyle = new LabelStyle();
+		BitmapFont bFont = new BitmapFont();
+		TextButtonStyle bStyle = new TextButtonStyle();
 		
-		style.up = new TextureRegionDrawable(upRegion);
-		style.down = new TextureRegionDrawable(downRegion);
-		style.font = buttonFont;
+		bStyle.font = bFont;
+		bStyle.up = new TextureRegionDrawable(buttonUpTexture);
+		bStyle.down = new TextureRegionDrawable(buttonDownTexture);
+		labelStyle.font = bFont;
 		
-		TextButton button1 = new TextButton("Button 1", style);
-		table.add(button1);
+		TextButton buildButton = new TextButton("Build", bStyle);
+		Label addressLabel = new Label("Credits: ", labelStyle);
+		Label creditsLabel = new Label("0", labelStyle);
 		
-		TextButton button2 = new TextButton("Button 2", style);
-		table.add(button2);
+		table.add(buildButton).right().top();
+		table.row();
+		table.add(addressLabel).pad(5f).bottom().left();
+		table.add(creditsLabel).pad(5f).bottom().left();
 		
 	}
 	
