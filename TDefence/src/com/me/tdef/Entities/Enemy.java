@@ -59,7 +59,7 @@ public class Enemy extends Entity{
 	private void initStats() {
 		switch(enemyType) {
 		case Zombie:
-			this.maxHealth = 15;
+			this.maxHealth = 37;
 			this.acceleration = 0.1f;
 			this.tangentialVelocityMax = 1f;
 			this.rotationAcceleration = 0.5f;

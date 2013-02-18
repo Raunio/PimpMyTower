@@ -20,9 +20,15 @@ public class CombatHandler {
 		for(int t = 0; t < towers.size; t++) {
 			for(int p = 0; p < towers.get(t).getActiveProjectiles().size; p++) {
 				for(int e = 0; e < enemies.size; e++) {
-					if(enemies.get(e).getBoundingBox().contains(towers.get(t).getActiveProjectiles().get(p).getBoundingBox())) {
+					if(enemies.get(e).getBoundingBox().contains(towers.get(t).getActiveProjectiles().get(p).getBoundingBox()) && enemies.get(e).getCurrentHealth() > 0) {
 						enemies.get(e).applyDamage(towers.get(t).getActiveProjectiles().get(p).getMaxDamage());
 						towers.get(t).getActiveProjectiles().removeIndex(p);
+						break;
+					}
+					
+					if(enemies.get(e).getCurrentHealth() <= 0) {
+						enemies.removeIndex(e);
+						break;
 					}
 				}
 			}

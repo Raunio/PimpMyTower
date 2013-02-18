@@ -28,7 +28,7 @@ public class Constants {
 	public static final char CornerPathSymbol_leftTop = 'a';
 	public static final char CornerPathSymbol_leftBot = 'v';
 	
-	public static final String[] map1Data = {"Y LXXXA", "Y Y   Y", "Y Y aX<", "Y Y Y", ">XV >XX"};
+	public static final String[] map1Data = {"Y LXXXA LXXA", "Y Y   Y Y  Y", "Y Y aX< Y  Y", "Y Y Y   Y  Y", ">XV >XXXV  Y", "           Y", "XXXXXXXXXXX<"};
 
 	
 	public enum RotationDirection{

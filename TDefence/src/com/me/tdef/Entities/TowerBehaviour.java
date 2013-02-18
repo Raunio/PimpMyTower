@@ -16,6 +16,8 @@ public class TowerBehaviour {
 				
 				if(distance(tower.getRotation(), tower.getTargetRotation()) < 2)
 					tower.shoot();
+				
+				break;
 			}
 		}
 	}

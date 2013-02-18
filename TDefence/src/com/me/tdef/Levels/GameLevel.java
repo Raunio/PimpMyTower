@@ -28,7 +28,10 @@ public class GameLevel {
 	
 	private Constants.ToolType currentTool;
 	
-	Texture towerSheet;
+	private Texture towerSheet;
+	
+	private float spawnTimer;
+	private float spawnInterval = 2f;
 	
 	/**
 	 * Initializes the level.
@@ -39,7 +42,7 @@ public class GameLevel {
 		
 		towerBehaviour = new TowerBehaviour();
 	
-		map = new GameMap(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		map = new GameMap(Gdx.graphics.getWidth() + 200, Gdx.graphics.getHeight());
 		map.loadContent();
 		map.createMap(Constants.map1Data);
 	
@@ -49,7 +52,7 @@ public class GameLevel {
 		currentTool = Constants.ToolType.Build;
 		
 		buildTower(1, 3);
-		spawnEnemy(Constants.EnemyType.Zombie, 0, 0, 90);
+		
 	}
 	
 	/**
@@ -71,6 +74,13 @@ public class GameLevel {
 		}
 		
 		CombatHandler.instance().update(towers, enemies);
+		
+		spawnTimer += deltaTime;
+		
+		if(spawnTimer >= spawnInterval) {
+			spawnEnemy(Constants.EnemyType.Zombie, 0, 0, 90);
+			spawnTimer = 0;
+		}
 		
 	}
 	
