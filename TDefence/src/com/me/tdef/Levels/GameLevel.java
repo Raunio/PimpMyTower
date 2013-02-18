@@ -82,8 +82,14 @@ public class GameLevel {
 		
 		CombatHandler.instance().update(towers, enemies);
 		
-		
-		
+		/**
+		//If there is no living enemies you initialize the next wave.
+		if(enemies.size == 0){
+			enemySpawner.InitNewWave();
+			enemySpawner.setWatingTime(15f); //Optional
+			enemySpawner.setSpawningEnemyType(Constants.EnemyType.Zombie); //Optional
+		}
+		*/
 	}
 	
 	/**

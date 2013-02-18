@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.*;
 import com.me.tdef.Constants;
 
 /** Class for spawning enemies.
- * @author Tuukka
+ * @author Tuukka Teppola
  *
  */
 
@@ -13,7 +13,7 @@ public class EnemySpawner
 {
 
 	private Vector2 spawnTilePoint;
-	private float rotation;
+	private float enemyStartingRotation;
 	
 	private int waveCounter;
 	private int maxWaves;
@@ -31,19 +31,27 @@ public class EnemySpawner
 	
 	public Array<Enemy> spawnedEnemies;
 	private Constants.EnemyType enemyType;
-
 	
+	
+
+	/**
+	 * Gets the current wave count.
+	 */
+	public int getWaveCount()
+	{
+		return waveCounter;
+	}
 	
 	/**
-	 * Gets the type of the enemy that is currently being spawned
+	 * Gets the type of the enemy that is currently being spawned.
 	 */
-	public Constants.EnemyType  getSpawningEnemyType()
+	public Constants.EnemyType getSpawningEnemyType()
 	{
 		return enemyType;
 	}
 	
 	/**
-	 * Gets the spawn rate of the spawning enemies
+	 * Gets the current spawn rate of the spawning enemies in seconds.
 	 */
 	public float getSpawnRate()
 	{
@@ -51,23 +59,23 @@ public class EnemySpawner
 	}
 	
 	/**
-	 * Gets the the length of the current wave
+	 * Gets the the length of the current wave in seconds.
 	 */
-	public float getWaveTime()
+	public float getWaveLength()
 	{
 		return waveTime;
 	}
 	
 	/**
-	 * Gets the waiting time between waves
+	 * Gets the waiting time between waves in seconds.
 	 */
-	public float getTimeBetweenWaves()
+	public float getWaitingTime()
 	{
 		return waitingTime;
 	}
 	
 	/**
-	 * Sets the type of the enemy that is currently being spawned
+	 * Sets the type of the enemy that is currently being spawned. InitNewWave() first if you want to start a hole new wave with a different kind of an enemy.
 	 */
 	public void setSpawningEnemyType(Constants.EnemyType newEnemyType)
 	{
@@ -75,7 +83,7 @@ public class EnemySpawner
 	}
 	
 	/**
-	 * Sets the the length of the current wave
+	 * Sets the the length of the current wave in seconds.
 	 */
 	public void setWaveTime(float time)
 	{
@@ -83,43 +91,58 @@ public class EnemySpawner
 	}
 	
 	/**
-	 * Sets the waiting time between waves
+	 * Sets the waiting time between waves in seconds for the upcoming wave initializations.
 	 */
-	public void setTimeBetweenWaves(float time)
+	public void setWatingTime(float time)
 	{
 		waitingTime = time;
 	}
 	
 	/**
-	 * The constructor
+	 * Sets the spawn rate in seconds.
 	 */
-	public EnemySpawner(Vector2 spawnTilePoint, float rotation)
+	public void setSpawnRate(float time)
+	{
+		spawnRate = time;
+	}
+	
+	
+	/**
+	 * The Constructor
+	 * @param spawnTilePoint
+	 * @param enemyStartingRotation
+	 */
+	public EnemySpawner(Vector2 spawnTilePoint, float enemyStartingRotation)
 	{
 		this.spawnTilePoint = spawnTilePoint;
-		this.rotation = rotation;
+		this.enemyStartingRotation = enemyStartingRotation;
 		
 		this.waveCounter = 1;
-		this.maxWaves = 10;
+		this.maxWaves = 20;
 		this.waveTimer = 0f;
-		this.waveTime = 60000.0f;
-		this.waveTimeIncreasement = 10000f;
+		this.waveTime = 10.0f;
+		this.waveTimeIncreasement = 5f;
 		this.waitingTimer = 0f;
-		this.waitingTime = 5000f;
+		this.waitingTime = 15f;
 		
 		this.spawnTimer = 0f;
-		this.spawnRate = 3000.0f;
-		this.minSpawnRate = 500f;
-		this.spawnRateDecreasement = 500f;
+		this.spawnRate = 3.0f;
+		this.minSpawnRate = 0.5f;
+		this.spawnRateDecreasement = 0.5f;
 		
 		spawnedEnemies = new Array<Enemy>();
-		isWaiting = false;
+		isWaiting = true;
 		enemyType = Constants.EnemyType.fromInt(0);
 
 	}
 	
-	private void InitWave(){
+	/**
+	 * Initializes a new wave and starts waiting for the start of it.
+	 */
+	public void InitNewWave(){
 		waveTimer = 0f;
 		waveCounter++;
+			
 		waveTime += waveTimeIncreasement;
 		isWaiting = true;
 		
@@ -138,13 +161,11 @@ public class EnemySpawner
 	}
 	
 	/**
-	 * Update method
+	 * Update method handles the function calls according to the time.
 	 */
 	public void Update(float deltaTime)
 	{
-		this.waveTimer += deltaTime;
-		this.spawnTimer += deltaTime;
-		
+				
 		if(isWaiting)
 		{			
 			this.waitingTimer += deltaTime;
@@ -155,18 +176,22 @@ public class EnemySpawner
 				spawnTimer = 0f;
 			}
 		}
-		
-		if(spawnTimer > spawnRate && waveCounter < maxWaves)
+		else
 		{
-			spawnTimer = 0f;
-			SpawnEnemy();
+			this.waveTimer += deltaTime;
+			this.spawnTimer += deltaTime;
+			
+			if(spawnTimer > spawnRate && waveCounter < maxWaves)
+			{
+				spawnTimer = 0f;
+				SpawnEnemy();
+			}
+			
+			if(waveTimer >= waveTime && waveCounter < maxWaves)
+			{
+				InitNewWave();	
+			}
 		}
-		
-		if(waveTimer >= waveTime && waveCounter < maxWaves)
-		{
-			InitWave();		
-		}
-		
 		
 	}
 	
@@ -177,8 +202,8 @@ public class EnemySpawner
 	{
 		Enemy enemy = new Enemy(enemyType);
 		enemy.setPosition(new Vector2(spawnTilePoint.x + enemy.getOrigin().x, spawnTilePoint.y + enemy.getOrigin().y));
-		enemy.setRotation(rotation);
-		enemy.setTargetRotation(rotation);
+		enemy.setRotation(enemyStartingRotation);
+		enemy.setTargetRotation(enemyStartingRotation);
 		
 		spawnedEnemies.add(enemy);
 	}
