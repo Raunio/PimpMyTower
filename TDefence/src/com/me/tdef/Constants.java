@@ -4,7 +4,7 @@ public class Constants {
 	public static final int TILE_WIDTH = 64;
 	public static final int TILE_HEIGHT = 64;
 	
-	public static final String TowerTextureAsset = "data/tower.png";
+	public static final String TowerTextureAsset = "data/tower32.png";
 	public static final String OpenPathTextureAsset = "data/openPathTexture.png";
 	public static final String CornerPathTextureAsset = "data/cornerPathTexture.png";
 	public static final String BaseGroundTextureAsset = "data/baseGroundTexture.png";

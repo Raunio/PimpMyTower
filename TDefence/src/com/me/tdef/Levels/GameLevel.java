@@ -122,7 +122,9 @@ public class GameLevel {
 	
 	private void buildTower(int x, int y) {
 		if(!map.getTileArray()[x][y].isOccupied()) {
-			towers.add(new Tower(towerSheet, map.getTileArray()[x][y].getPosition()));
+			Tower t = new Tower(towerSheet, map.getTileArray()[x][y].getPosition());
+			t.setPosition(new Vector2(t.getPosition().x - t.getOrigin().x, t.getPosition().y - t.getOrigin().y));
+			towers.add(t);
 			map.getTileArray()[x][y].setOccupied(true);
 		}
 	}

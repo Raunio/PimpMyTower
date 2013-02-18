@@ -32,8 +32,8 @@ public class Enemy extends Entity{
 	
 	public Enemy(Constants.EnemyType enemyType) {
 		this.enemyType = enemyType;
-		this.scaleX = 1f;
-		this.scaleY = 1f;
+		this.scaleX = 0.8f;
+		this.scaleY = 0.8f;
 		
 		this.currentEntityState = Constants.EntityState.Moving;
 		

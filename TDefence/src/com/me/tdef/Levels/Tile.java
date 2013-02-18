@@ -40,6 +40,13 @@ public class Tile {
 	}
 	
 	/**
+	 * Returns the origin of the tile.
+	 */
+	public Vector2 getOrigin() {
+		return new Vector2(Constants.TILE_WIDTH / 2, Constants.TILE_HEIGHT / 2);
+	}
+	
+	/**
 	 * Returns a guidepoint for enemies if the tile has one.
 	 */
 	public EnemyGuidePoint getGuidePoint() {

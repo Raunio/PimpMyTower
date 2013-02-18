@@ -51,8 +51,8 @@ public class Tower extends Entity {
 		
 		activeProjectiles = new Array<Projectile>();
 		
-		scaleX = 1f;
-		scaleY = 1f;
+		scaleX = 1.2f;
+		scaleY = 1.2f;
 		rotation = 0f;
 		this.rotationAcceleration = 0.25f;
 		this.rotationMaxSpeed = 2f;
@@ -67,8 +67,8 @@ public class Tower extends Entity {
 	}
 	
 	private void initializeAnimations(Texture spriteSheet) {
-		idleAnimation = new EntityAnimation(spriteSheet, 0.025f, true, 64, 64, 0, 1, 0);
-		shootingAnimation = new EntityAnimation(spriteSheet, 0.025f, false, 64, 64, 0, 1, 0);
+		idleAnimation = new EntityAnimation(spriteSheet, 0.025f, true, 32, 32, 0, 1, 0);
+		shootingAnimation = new EntityAnimation(spriteSheet, 0.025f, false, 32, 32, 0, 1, 0);
 	}
 	
 	/**
