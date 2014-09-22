@@ -19,6 +19,15 @@ public class Tile {
 	
 	private EnemyGuidePoint guidePoint;
 	
+	private Vector2 position = new Vector2();
+	private Vector2 origin = new Vector2();
+	
+	private int sections;
+	
+	private boolean canBuild = false;
+	
+	private boolean[] isOccupied;
+	
 	
 	/**
 	 * Returns true if the tile is occupied, meaning that building on it is not allowed.
@@ -27,23 +36,74 @@ public class Tile {
 		return occupied;
 	}
 	
+	public boolean isOccupied(int section) {
+		return isOccupied[section];
+	}
 
 	public void setOccupied(boolean value) {
 		occupied = value;
+	}
+	
+	public void setOccupied(boolean value, int section) {
+		isOccupied[section] = value;
+	}
+	
+	public boolean canBuild() {
+		return canBuild;
 	}
 	
 	/**
 	 * Returns the tiles position.
 	 */
 	public Vector2 getPosition() {
-		return new Vector2(tileRectangle.x, tileRectangle.y);
+		position.x = tileRectangle.x;
+		position.y = tileRectangle.y;
+		
+		return position;
+	}
+	
+	public Vector2 getAdjustedPosition() {
+		position.x = tileRectangle.x - tileRectangle.width / 4;
+		position.y = tileRectangle.y - tileRectangle.height / 4;
+		
+		return position;
+	}
+	
+	public int getSectionWidth() {
+		int cols = (int)Math.sqrt(sections);
+		return Constants.TILE_WIDTH / cols;
+	}
+	
+	public int getSectionHeight() {
+		int cols = (int)Math.sqrt(sections);
+		return Constants.TILE_HEIGHT / cols;
+	}
+	
+	public Vector2 getSectionPosition(int s) {
+		if(s >= sections) return null;
+		
+		int cols = (int)Math.sqrt(sections);
+		
+		int row = (int)s / cols;
+		int col = s - (row * cols);
+		
+		position.x = tileRectangle.x + (tileRectangle.width / cols) * col;
+		position.y = tileRectangle.y + (tileRectangle.height / cols) * row;
+		
+		return position;
+	}
+	
+	public int getSectionCount() {
+		return sections;
 	}
 	
 	/**
 	 * Returns the origin of the tile.
 	 */
 	public Vector2 getOrigin() {
-		return new Vector2(Constants.TILE_WIDTH / 2, Constants.TILE_HEIGHT / 2);
+		origin.x = Constants.TILE_WIDTH / 2;
+		origin.y = Constants.TILE_HEIGHT / 2;
+		return origin;
 	}
 	
 	/**
@@ -63,14 +123,16 @@ public class Tile {
 	/**
 	 * Returns true if the tile contais the point.
 	 */
-	public boolean containsPoint(Vector2 point) {
-		return tileRectangle.contains(point.x, point.y);	
+	public boolean containsPoint(float x, float y) {
+		return tileRectangle.contains(x, y);	
 	}
 	
-	public Tile(Vector2 position) {
+	public Tile(Vector2 position, int sections) {
 		this.tileRectangle = new Rectangle((int)position.x, (int)position.y, Constants.TILE_WIDTH, Constants.TILE_HEIGHT);
 		hasTexture = true;
 		occupied = true;
+		this.sections = sections;
+		this.isOccupied = new boolean[sections];
 	}
 	
 	public void createSprite(char symbol) {
@@ -128,9 +190,12 @@ public class Tile {
 		default:
 			hasTexture = false;
 			occupied = false;
+			canBuild = true;
 		}
 		
+		sprite.setSize(Constants.TILE_WIDTH, Constants.TILE_HEIGHT);
 		sprite.setPosition(tileRectangle.x, tileRectangle.y);
+		
 		tileSprite = sprite;
 	}
 	

@@ -1,6 +1,5 @@
 package com.me.tdef;
 
-import com.badlogic.gdx.math.Vector2;
 import com.me.tdef.Entities.Entity;
 import com.me.tdef.Entities.Projectile;
 
@@ -43,7 +42,7 @@ public class EntityPhysics {
 		float vX = (float)Math.cos(Math.toRadians(projectile.getRotation())) * projectile.getTangentialVelocityMax();
     	float vY = (float)Math.sin(Math.toRadians(projectile.getRotation())) * projectile.getTangentialVelocityMax();
     	
-    	projectile.setVelocity(new Vector2(vX, vY));
+    	projectile.setVelocity(vX, vY);
 	}
 	
     private void rotateEntity(Entity subject) {
@@ -80,7 +79,7 @@ public class EntityPhysics {
     	float vX = (float)Math.cos(Math.toRadians(subject.getRotation())) * subject.getTangentialVelocity();
     	float vY = (float)Math.sin(Math.toRadians(subject.getRotation())) * subject.getTangentialVelocity();
     	
-    	subject.setVelocity(new Vector2(vX, vY));
+    	subject.setVelocity(vX, vY);
     }
     
     private void stopEntity(Entity subject) {

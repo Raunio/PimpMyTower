@@ -22,6 +22,8 @@ public class GameMap {
 	
 	private Tile[][] tiles;
 	
+	private final int SECTIONS = 4;
+	
 	/**
 	 * Gets the width of the map.
 	 */
@@ -106,8 +108,8 @@ public class GameMap {
 	public void GuideEnemy(Enemy subject) {
 		for(int i = 0; i < (int)(mapWidth / Constants.TILE_WIDTH); i++) {
 			for(int j = 0; j < (int)(mapHeight / Constants.TILE_HEIGHT); j++) {
-				if(tiles[i][j] != null && tiles[i][j].containsPoint(new Vector2(subject.getPosition().x + subject.getOrigin().x, 
-						subject.getPosition().y + subject.getOrigin().y)) && tiles[i][j].getGuidePoint() != null) {
+				if(tiles[i][j] != null && tiles[i][j].containsPoint(subject.getPosition().x + subject.getOrigin().x, 
+						subject.getPosition().y + subject.getOrigin().y) && tiles[i][j].getGuidePoint() != null) {
 					subject.setTargetRotation(tiles[i][j].getGuidePoint().getGuideRotation());
 				}
 			}
@@ -145,8 +147,10 @@ public class GameMap {
 		tiles = new Tile[(int) (mapWidth / Constants.TILE_WIDTH)][(int) (mapHeight / Constants.TILE_HEIGHT)];
 		
 		for(String s : data) {
-			for(int i = 0; i < s.length(); i++) {	
-				tiles[i][rowCounter] = new Tile(new Vector2(i * Constants.TILE_WIDTH, rowCounter * Constants.TILE_HEIGHT));
+			for(int i = 0; i < s.length(); i++) {
+				if(i == tiles.length) break;
+				if(rowCounter == tiles[i].length) return;
+				tiles[i][rowCounter] = new Tile(new Vector2(i * Constants.TILE_WIDTH, rowCounter * Constants.TILE_HEIGHT), SECTIONS);
 				tiles[i][rowCounter].createSprite(s.charAt(i));
 			}
 			

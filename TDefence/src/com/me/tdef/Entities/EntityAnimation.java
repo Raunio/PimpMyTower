@@ -22,6 +22,8 @@ public class EntityAnimation {
 	private int frameWidth;
 	private int frameHeight;
 	
+	private Vector2 origin = new Vector2();
+	
 	/**
 	 * Returns the current frame of the animation.
 	 */
@@ -47,7 +49,9 @@ public class EntityAnimation {
 	 * Returns the origin of the current frame of the animation.
 	 */
 	public Vector2 frameOrigin(){
-		return new Vector2(currentFrame.getRegionWidth() / 2, currentFrame.getRegionHeight() / 2);
+		origin.x = currentFrame.getRegionWidth() / 2;
+		origin.y = currentFrame.getRegionHeight() / 2;
+		return origin;
 	}
 	
 	/** Set up a basic looping animation.
@@ -77,6 +81,20 @@ public class EntityAnimation {
 	public void update(float deltaTime){
 		animTimer += deltaTime;
 		currentFrame = animation.getKeyFrame(animTimer, looping);
+	}
+	
+	/**
+	 * Resets the animation to its starting frame.
+	 */
+	public void resetAnimation() {
+		animTimer = 0;
+	}
+	
+	/**
+	 * Returns true if the animation is finished.
+	 */
+	public boolean isAnimationFinished() {
+		return animation.isAnimationFinished(animTimer);
 	}
 
 }

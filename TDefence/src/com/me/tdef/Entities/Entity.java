@@ -11,8 +11,9 @@ import com.me.tdef.Constants;
  */
 public abstract class Entity {
 	
-	protected Vector2 position;
-	protected Vector2 velocity;
+	protected Vector2 position = new Vector2();
+	protected Vector2 velocity = new Vector2();
+	protected Vector2 origin;
 	protected float rotationVelocity;
 	protected float acceleration;
 	protected float tangentialVelocityMax;
@@ -31,6 +32,10 @@ public abstract class Entity {
 	protected float rotationMaxSpeed;
 	protected float rotationAcceleration;
 	protected float targetRotation;
+	
+	private Vector2 distance2D = new Vector2();
+	
+	private Rectangle boundingBox = new Rectangle();
 
 	/**
 	 * Gets the position of the entity.
@@ -99,7 +104,7 @@ public abstract class Entity {
 	 * Returns the origin of the entitys current animation.
 	 */
 	public Vector2 getOrigin() {
-		return currentAnimation.frameOrigin();
+		return origin == null ? currentAnimation.frameOrigin() : origin;
 	}
 	
 	/**
@@ -148,24 +153,33 @@ public abstract class Entity {
 	 * Returns a rectangle the size of the current frame of the entitys animation. This is primarily used for collision detection.
 	 */
 	public Rectangle getBoundingBox(){
-		return new Rectangle(position.x, position.y, 
-				currentAnimation.currentFrameRegion().getRegionWidth(), 
-				currentAnimation.currentFrameRegion().getRegionHeight());
+		boundingBox.x = position.x;
+		boundingBox.y = position.y;
+		boundingBox.width = currentAnimation.currentFrameRegion().getRegionWidth();
+		boundingBox.height = currentAnimation.currentFrameRegion().getRegionHeight();
+		
+		return boundingBox;
 	}
 	
 	/**
 	 * Applies all velocites to entity.
 	 */
 	public void applyVelocities(){
-		position = new Vector2(position.x + getVelocity().x, position.y + getVelocity().y);
+		position.x += getVelocity().x;
+		position.y += getVelocity().y;
 		rotation += rotationVelocity;
 	}
 
 	/**
 	 * Sets the velocity of the entity.
 	 */
-	public void setVelocity(Vector2 value){
-		this.velocity = value;
+	public void setVelocity(float x, float y){
+		this.velocity.x = x;
+		this.velocity.y = y;
+	}
+	
+	public void setOrigin(float x, float y) {
+		this.origin = new Vector2(x, y);
 	}
 	
 	/**
@@ -182,8 +196,14 @@ public abstract class Entity {
 	/**
 	 * Sets a facing point for the entity.
 	 */
-	public void setFacingPoint(Vector2 point){
-		this.facingPoint = point;
+	public void setFacingPoint(float x, float y){
+		if(facingPoint == null) {
+			facingPoint = new Vector2(x, y);
+			return;
+		}
+		
+		this.facingPoint.x = x;
+		this.facingPoint.y = y;
 	}
 	
 	/**
@@ -203,8 +223,17 @@ public abstract class Entity {
 	/**
 	 * Sets the position of the entity.
 	 */
-	public void setPosition(Vector2 position) {
-		this.position = position;
+	public void setPosition(float x, float y) {
+		this.position.x = x;
+		this.position.y = y;
+	}
+	
+	/**
+	 * Sets the scale of the entity.
+	 */
+	public void setScale(float x, float y) {
+		scaleX = x;
+		scaleY = y;
 	}
 	
 	/**
@@ -219,7 +248,7 @@ public abstract class Entity {
 	 */
 	public void draw(SpriteBatch batch){
 		batch.draw(currentAnimation.currentFrameRegion(), position.x, position.y, 
-				currentAnimation.frameOrigin().x, currentAnimation.frameOrigin().y, 
+				getOrigin().x, getOrigin().y, 
 				getBoundingBox().width, getBoundingBox().height, scaleX, scaleY, rotation);
 	}
 	
@@ -229,8 +258,8 @@ public abstract class Entity {
 	public void updateRotation(){
 		
 		if(facingPoint != null){
-			Vector2 distance2D = new Vector2(facingPoint.x - position.x - currentAnimation.frameOrigin().x,
-					facingPoint.y - position.y - currentAnimation.frameOrigin().y);
+			distance2D.x = facingPoint.x - position.x - currentAnimation.frameOrigin().x;
+			distance2D.y = facingPoint.y - position.y - currentAnimation.frameOrigin().y;
 			
 			targetRotation = (float)Math.toDegrees(Math.atan2(distance2D.y, distance2D.x));
 		}

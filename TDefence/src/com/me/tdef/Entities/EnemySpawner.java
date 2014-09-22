@@ -1,5 +1,7 @@
 package com.me.tdef.Entities;
 
+import java.util.Random;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.me.tdef.Constants;
@@ -23,6 +25,9 @@ public class EnemySpawner
 	private float waitingTimer;
 	private float waitingTime;
 	private boolean isWaiting;
+	
+	private boolean randomizePositions;
+	private int randomizeAmount;
 	
 	private float spawnTimer;
 	private float spawnRate;
@@ -120,15 +125,18 @@ public class EnemySpawner
 		this.waveCounter = 1;
 		this.maxWaves = 20;
 		this.waveTimer = 0f;
-		this.waveTime = 10.0f;
+		this.waveTime = 15.0f;
 		this.waveTimeIncreasement = 5f;
 		this.waitingTimer = 0f;
-		this.waitingTime = 15f;
+		this.waitingTime = 2f;
 		
 		this.spawnTimer = 0f;
-		this.spawnRate = 3.0f;
+		this.spawnRate = 1.0f;
 		this.minSpawnRate = 0.5f;
 		this.spawnRateDecreasement = 0.5f;
+		
+		this.randomizePositions = true;
+		this.randomizeAmount = 32;
 		
 		spawnedEnemies = new Array<Enemy>();
 		isWaiting = true;
@@ -201,7 +209,10 @@ public class EnemySpawner
 	private void SpawnEnemy()
 	{
 		Enemy enemy = new Enemy(enemyType);
-		enemy.setPosition(new Vector2(spawnTilePoint.x + enemy.getOrigin().x, spawnTilePoint.y + enemy.getOrigin().y));
+		enemy.setPosition(spawnTilePoint.x + Constants.TILE_WIDTH / 2 - enemy.getOrigin().x 
+				+ (randomizePositions ? Constants.getRandomInteger(-randomizeAmount, randomizeAmount, new Random()) : 0), 
+				spawnTilePoint.y + Constants.TILE_HEIGHT / 2 - enemy.getOrigin().y);
+		
 		enemy.setRotation(enemyStartingRotation);
 		enemy.setTargetRotation(enemyStartingRotation);
 		

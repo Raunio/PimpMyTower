@@ -19,11 +19,12 @@ public class MyGdxGame implements ApplicationListener {
 		float h = Gdx.graphics.getHeight();
 		
 		camera = new OrthographicCamera(w, h);
-		camera.position.set(w / 2, h / 2, 0);
+		camera.position.set((w / 2) * 1.5f, (h / 2) * 1.5f, 0f);
+		camera.zoom = 1.5f;
 		batch = new SpriteBatch();
 		
 		level = new GameLevel();
-		level.create();
+		level.create(camera);
 
 	}
 
@@ -41,12 +42,12 @@ public class MyGdxGame implements ApplicationListener {
 		camera.update();
 
 		level.update(Gdx.graphics.getDeltaTime());
-		level.handleInput(Gdx.input.getX(), Gdx.input.getY());
+		level.handleInput(Gdx.input, camera.zoom);
 		batch.setProjectionMatrix(camera.combined);
 		
 		batch.begin();
 		
-		level.render(batch);
+		level.render(batch, Gdx.graphics.getDeltaTime());
 
 		batch.end();
 		

@@ -1,5 +1,6 @@
 package com.me.tdef.Entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -12,10 +13,7 @@ import com.me.tdef.EntityPhysics;
  *
  */
 public class Tower extends Entity {
-	private float attackRange;
 	private float attackSpeed;
-	
-	private Constants.ProjectileType projectileType;
 	
 	private Array<Projectile> activeProjectiles;
 	
@@ -25,50 +23,68 @@ public class Tower extends Entity {
 	private Constants.TowerState currentTowerState;
 	
 	private float shootTimer;
+	
+	private TowerBarrel mainBarrel;
+	private TowerHull hull;
 
+	private static Texture spriteSheet;
 	
 	/**
 	 * Returns the attack range of the tower in pixels.
 	 */
 	public float getAttackRange() {
-		return attackRange;
+		return 150f;
 	}
 	
 	/**
-	 * Returns an array projecitles shot by the turret.
+	 * Returns an array projectiles shot by the turret.
 	 */
 	public Array<Projectile> getActiveProjectiles() {
 		return activeProjectiles;
 	}
 	
-	public Tower(Texture spriteSheet, Vector2 position) {
-		projectileType = Constants.ProjectileType.Bullet;
+	public Tower(int[] code, Vector2 position) {	
+		initializeAnimations();
 		
-		initializeAnimations(spriteSheet);
-		
-		this.position = new Vector2(position.x + Constants.TILE_WIDTH - idleAnimation.getFrameWidth(), 
-				position.y + Constants.TILE_HEIGHT - idleAnimation.getFrameHeight());
+		this.position = new Vector2(position.x, position.y);
 		
 		activeProjectiles = new Array<Projectile>();
-		
-		scaleX = 1.2f;
-		scaleY = 1.2f;
-		rotation = 0f;
-		this.rotationAcceleration = 0.25f;
-		this.rotationMaxSpeed = 2f;
-		this.attackRange = 120f;
-		this.attackSpeed = 0.3f;
-		
+	
 		rotationDirection = Constants.RotationDirection.None;
 		currentEntityState = Constants.EntityState.Stopped;
-		currentTowerState = Constants.TowerState.Idle;
+		currentTowerState = Constants.TowerState.Idle;	
 		
-		update(0f);
+		currentAnimation.update(0f);
+		
+		mainBarrel = new TowerBarrel(Constants.TowerBarrelType.Basic, 
+				new Texture(Gdx.files.internal(Constants.TowerBarrelSheetAsset)),
+				new Vector2(this.position.x, this.position.y),
+				this.rotation);
+		
+		mainBarrel.setProjectile(code);
+		
+		hull = new TowerHull(spriteSheet, this.position, rotation, 32, 32, 100);
+		hull.setScale(1f, 1f);
+
+		this.attackSpeed = 0.3f;
+		
+		initializeStats();
 	}
 	
-	private void initializeAnimations(Texture spriteSheet) {
+	public static void loadSpriteSheet(String path) {
+		spriteSheet = new Texture(Gdx.files.internal(path));
+	}
+	
+	private void initializeAnimations() {
 		idleAnimation = new EntityAnimation(spriteSheet, 0.025f, true, 32, 32, 0, 1, 0);
 		shootingAnimation = new EntityAnimation(spriteSheet, 0.025f, false, 32, 32, 0, 1, 0);
+		
+		currentAnimation = idleAnimation;
+	}
+	
+	private void initializeStats() {
+		rotationMaxSpeed = 3f;
+		rotationAcceleration = 0.5f;
 	}
 	
 	/**
@@ -79,6 +95,9 @@ public class Tower extends Entity {
 		currentAnimation.update(deltaTime);
 		updateRotation();
 		shootTimer += deltaTime;
+		
+		mainBarrel.update(deltaTime, rotation);
+		hull.update(deltaTime, rotation);
 	}
 	
 	/**
@@ -86,9 +105,9 @@ public class Tower extends Entity {
 	 */
 	public void shoot() {
 		if(isAttackReady()) {
-			activeProjectiles.add(new Projectile(projectileType, new Vector2(position.x + getOrigin().x, 
-					position.y + getOrigin().y), rotation));
-			currentTowerState = Constants.TowerState.Shooting;
+			activeProjectiles.add(mainBarrel.getProjectile());
+			mainBarrel.playShootingAnimation();
+			hull.playShootingAnimation();
 			shootTimer = 0;
 		}
 	}
@@ -106,10 +125,25 @@ public class Tower extends Entity {
 	/**
 	 * Draw all active projectiels shot by the turret.
 	 */
-	public void drawProjectiles(SpriteBatch batch) {
+	private void drawProjectiles(SpriteBatch batch) {
 		for(Projectile p : activeProjectiles) {
 			p.draw(batch);
 		}
+	}
+	
+	private void drawBarrels(SpriteBatch batch) {
+		mainBarrel.draw(batch);
+	}
+	
+	private void drawHull(SpriteBatch batch) {
+		hull.draw(batch);
+	}
+	
+	@Override
+	public void draw(SpriteBatch batch) {		
+		drawProjectiles(batch);
+		drawBarrels(batch);
+		drawHull(batch);
 	}
 	
 	/**
